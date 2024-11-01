@@ -17,7 +17,8 @@ public class TaskManagementApp {
     }
 
     private void runApp() {
-        while (true) {
+        boolean running = true;
+        while (running) {
             System.out.println("\n--- Task Management System Menu ---");
             System.out.println("1. Add User");
             System.out.println("2. Add Task");
@@ -27,26 +28,23 @@ public class TaskManagementApp {
             System.out.println("6. Send Notification");
             System.out.println("7. Exit");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
+            int choice = getIntegerInput("Select an option: ");
             switch (choice) {
                 case 1:
-                    System.out.print("Enter user name: ");
-                    String userName = scanner.nextLine();
+                    String userName = getUserInput("Enter user name: ");
                     taskManager.addUser(new User(userName));
+                    System.out.println("User added successfully.");
                     break;
                 case 2:
-                    System.out.print("Enter task description: ");
-                    String taskDescription = scanner.nextLine();
+                    String taskDescription = getUserInput("Enter task description: ");
                     taskManager.addTask(new Task(taskDescription));
+                    System.out.println("Task added successfully.");
                     break;
                 case 3:
-                    System.out.print("Enter user name to assign task: ");
-                    userName = scanner.nextLine();
-                    System.out.print("Enter task ID to assign: ");
-                    int taskId = scanner.nextInt();
+                    userName = getUserInput("Enter user name to assign task: ");
+                    int taskId = getIntegerInput("Enter task ID to assign: ");
                     taskManager.assignTask(userName, taskId);
+                    System.out.println("Task assigned successfully.");
                     break;
                 case 4:
                     taskManager.listUsers();
@@ -55,18 +53,36 @@ public class TaskManagementApp {
                     taskManager.listTasks();
                     break;
                 case 6:
-                    System.out.print("Enter user name for notification: ");
-                    userName = scanner.nextLine();
-                    System.out.print("Enter notification message: ");
-                    String message = scanner.nextLine();
+                    userName = getUserInput("Enter user name for notification: ");
+                    String message = getUserInput("Enter notification message: ");
                     taskManager.sendNotification(userName, message);
+                    System.out.println("Notification sent successfully.");
                     break;
                 case 7:
-                    System.out.println("Exiting...");
-                    saveData(); // Save data before exit
-                    return;
+                    exitApp();
+                    running = false;
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private String getUserInput(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine();
+    }
+
+    private int getIntegerInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                int input = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+                return input;
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // clear invalid input
             }
         }
     }
@@ -74,6 +90,12 @@ public class TaskManagementApp {
     private void saveData() {
         // Save data to storage (implementation omitted for brevity)
         System.out.println("Data saved successfully.");
+    }
+
+    private void exitApp() {
+        saveData();
+        System.out.println("Exiting...");
+        scanner.close();
     }
 
     public static void main(String[] args) {
